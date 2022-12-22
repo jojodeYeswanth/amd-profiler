@@ -137,7 +137,7 @@ def data_collector():
     
     else:
         print("NJMON is already installed")
-
+        os.system("njmon -@")
 
     count = input("Number of records to be capture : ")
     pro = subprocess.call(["bash",'./njmondemo.sh',count])
