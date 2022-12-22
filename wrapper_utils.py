@@ -127,6 +127,18 @@ def rename_workloadfile():
 
 #Collecting data using  njomn
 def data_collector():
+    
+    if not os.path.isfile("/usr/local/bin/njmon"):
+        print("NJMON is installing...")
+        time.sleep(1)
+        subprocess.call(["bash","./njmon_installation.sh"])
+        print("NJMON is intalled")
+        os.system("njmon -@")
+    
+    else:
+        print("NJMON is already installed")
+
+
     count = input("Number of records to be capture : ")
     pro = subprocess.call(["bash",'./njmondemo.sh',count])
     print("Collecting Data ...")
