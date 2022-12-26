@@ -140,7 +140,7 @@ def data_collector():
         os.system("njmon -@")
 
     count = input("Number of records to be capture : ")
-    pro = subprocess.call(["bash",'./njmondemo.sh',count])
+    pro = subprocess.call(["bash",'./njmon_collect.sh',count])
     print("Collecting Data ...")
     #Adding Progress Bar
     for i in tqdm (range (100),
