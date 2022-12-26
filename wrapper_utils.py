@@ -7,13 +7,12 @@ import time
 import glob
 from tqdm import tqdm
 import tarfile
+import shutil
 
 #----------------------------------nativePlatformProfilier-----------------------------------
 
-path = os.path.join(os.getcwd())
-output_path = os.path.join(path, "wrapper")
 
-def nativePlatformDetails():
+def nativePlatformDetails(output_path):
 
     core = os.popen(" lscpu | grep 'Core(s) per socket' | cut -f 2 -d ':' | awk '{$1=$1}1'").read()
     model_name = os.popen("lscpu | grep 'Model name' | cut -f 2 -d ':' | awk '{$1=$1}1'").read()
@@ -106,8 +105,7 @@ def getTotalDiskSize():
     
     return totalSize
 #Renaming the workload profiler file and removing the .err file
-def rename_workloadfile():
-    global output_path
+def rename_workloadfile(output_path):
     file_extension = ".err"
     files = os.listdir(output_path)
     date_time=str(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
@@ -126,7 +124,8 @@ def rename_workloadfile():
         os.rename (latest_file, new_file)
 
 #Collecting data using  njomn
-def data_collector():
+def data_collector(path,output_path):
+
     
     if not os.path.isfile("/usr/local/bin/njmon"):
         print("NJMON is installing...")
@@ -137,10 +136,20 @@ def data_collector():
     
     else:
         print("NJMON is already installed")
+        os.system("njmon -@")
+
+    #Adding platform profiler file
+    pattern = path + "/*_" + "PlatformProfile" + ".json"
+    print(pattern)
+    result = glob.glob(pattern)
+    print(result)
+    for fname in result:
+        shutil.copy2(os.path.join(path,fname), output_path)
+
 
 
     count = input("Number of records to be capture : ")
-    pro = subprocess.call(["bash",'./njmondemo.sh',count])
+    pro = subprocess.call(["bash",'./njmon_collect.sh',count])
     print("Collecting Data ...")
     #Adding Progress Bar
     for i in tqdm (range (100),
