@@ -1,0 +1,1 @@
+{"nativePlatformID": "Intel(R)Xeon(R)CPUE5-2676v3@2.40GHz0c0_9GB25_0g12012023061753", "nativePlatformName": "Intel(R)Xeon(R)CPUE5-2676v3@2.40GHz0c0_9GB25_0g", "cores": "1", "model_name": "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz", "vcpu_count": "0", "mem_max": "0_9GB", "disk_capacity": "25_0g", "net_type": ["docker0", "eth0", "lo"]}
