@@ -9,6 +9,7 @@ from tqdm import tqdm
 import tarfile
 import shutil
 import sys
+
 #----------------------------------nativePlatformProfilier-----------------------------------
 
 
@@ -26,11 +27,11 @@ def njmon_installation():
     os.chdir("workload_profiler/installation_files")
     os.system("sudo ./ninstall njmon_Ubuntu20_x86_64_v71")
 
-def njmon_collect(count):
-    os.chdir("wrapper")
+def njmon_collect(output_path,count):
+    os.chdir(output_path)
     print(os.getcwd())
-    os.system("njmon -s 5 -c "+count+"  -m . -f workloadProfiler.json")
-    os.chdir("/home/ubuntu/demo")
+    os.system("njmon -s 5 -c "+count+" -m . -f WorkloadProfile.json")
+    os.chdir("..")
 def nativePlatformDetails(output_path):
 
     core = os.popen(" lscpu | grep 'Core(s) per socket' | cut -f 2 -d ':' | awk '{$1=$1}1'").read()
@@ -67,7 +68,7 @@ def nativePlatformDetails(output_path):
         }
 
  #Creating json file of the dictionary
-    native_path= os.path.join(output_path,"nativeplatformdetails.json")
+    native_path= os.path.join(output_path,"nativePlatformDetails.json")
     with open(native_path,'w') as outfile:
         json.dump(nativeplatformdetails,outfile)
         print("native platform json file created")
@@ -127,8 +128,8 @@ def getTotalDiskSize():
 def rename_workloadfile(output_path):
     file_extension = ".err"
     files = os.listdir(output_path)
-    date_time=str(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
-    newfilename = "WorkloadProfiler"+date_time+".json"
+    #date_time=str(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+    newfilename = "WorkloadProfile.json"
     #removing .err file
     for file in files:
         if file.endswith(file_extension):
@@ -159,7 +160,7 @@ def data_collector(path,output_path):
         os.system("njmon -@")
 
     #Adding platform profiler file
-    pattern = path + "/*_" + "PlatformProfile" + ".json"
+    pattern = path + "/PlatformProfile" + ".json"
     #print(pattern)
     result = glob.glob(pattern)
     #print(result)
@@ -167,27 +168,28 @@ def data_collector(path,output_path):
         shutil.copy2(os.path.join(path,fname), output_path)
 
 
-    try:
-        count = input("Enter number of counts")
-        #pro = subprocess.call(["bash",'./njmon_collect.sh',count])
-        njmon_collect(count)
-        print("Collecting Data ...")
-        #Adding Progress Bar
-        for i in tqdm (range (100),
-                desc="Loading…",
-                ascii=False):
-            count1 = (5*int(count)/100)
-            time.sleep(count1)
-        print("Data Collected")
-    except Exception as e:
-        print("Please provide at least one argument to collect the data")
-        exit()
+    #count = sys.argv[1]
+    count = input("Enter number of Count : ")
+    #pro = subprocess.call(["bash",'./njmon_collect.sh',count])
+    njmon_collect(output_path,count)
+    print
+    print("Collecting Data ...")
+    #Adding Progress Bar
+    
+    for i in tqdm (range (100),
+            desc="Loading…",
+            ascii=False):
+        count1 = (5*int(count)/100)
+        time.sleep(count1)
+        
+    time.sleep(count1)
+    print("Data Collected")
 
 #creating tar file from wrapper dir
-def tarCreation():
-    os.chdir("/home/ubuntu/demo/")
-    tar = tarfile.open("wrapper.tar.gz", "w:gz")
-    tar.add("wrapper")
+def tarCreation(output_path):
+    output_filename = output_path + ".tar.gz"
+    tar = tarfile.open(output_filename, "w:gz")
+    tar.add(output_path)
     tar.close()
     print("Tar file created successfully")
 
